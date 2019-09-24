@@ -58,6 +58,8 @@ app.post('/orders', function(req, res ){
     
 })
 
+app.post('/orders')
+
 app.get('/orders', (req, res) => {
     // var params = {
     //     'TableName': ddbTable,
@@ -84,6 +86,33 @@ app.get('/orders', (req, res) => {
         }
     })
 
+})
+
+app.post('/graphOrder', (req, res)=> {
+
+    let order = req.body 
+
+    console.log(order)
+
+    let graphqlMutation = `mutation updateOrder {
+        updateOrder(input: {
+          id: "${order.id}"
+          status: "${order.status}"
+        }) 
+        {id status} 
+      } `
+
+      try {
+        let results = graphqlHandler.updateOrder(graphqlMutation)
+        results.then(graphRes => {
+            console.log("Returning update order promise from graphql api call ", graphRes)
+            return res.json(graphRes.data.updateOrder)
+        }).catch(err => {
+            return res.json(err)
+        })
+      } catch (err) {
+        return res.json(err)
+      }
 })
 
 
